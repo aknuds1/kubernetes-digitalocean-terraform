@@ -42,6 +42,11 @@ variable "size_worker" {
     default = "512mb"
 }
 
+variable "tags" {
+  type = "list"
+  default = []
+}
+
 ###############################################################################
 #
 # Specify provider
@@ -69,6 +74,7 @@ resource "digitalocean_droplet" "k8s_etcd" {
     size = "${var.size_etcd}"
     user_data = "${file("${path.module}/00-etcd.yaml")}"
     ssh_keys = ["${split(",", var.ssh_fingerprint)}"]
+    tags = ["${split(",", var.tags)}"]
 
     # Generate the Certificate Authority
     provisioner "local-exec" {

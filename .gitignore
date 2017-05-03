@@ -11,3 +11,4 @@ secrets/
 *.tfstate
 *.tfstate.backup
 /terraform_vars.sh
+/custom.tf
