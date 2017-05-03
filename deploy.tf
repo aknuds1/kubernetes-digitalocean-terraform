@@ -74,7 +74,7 @@ resource "digitalocean_droplet" "k8s_etcd" {
     size = "${var.size_etcd}"
     user_data = "${file("${path.module}/00-etcd.yaml")}"
     ssh_keys = ["${split(",", var.ssh_fingerprint)}"]
-    tags = ["${split(",", var.tags)}"]
+    tags = ["${var.tags}"]
 
     # Generate the Certificate Authority
     provisioner "local-exec" {
@@ -181,6 +181,7 @@ resource "digitalocean_droplet" "k8s_master" {
     size = "${var.size_master}"
     user_data = "${data.template_file.master_yaml.rendered}"
     ssh_keys = ["${split(",", var.ssh_fingerprint)}"]
+    tags = ["${var.tags}"]
 
     # Generate k8s_master server certificate
     provisioner "local-exec" {
@@ -189,7 +190,7 @@ resource "digitalocean_droplet" "k8s_master" {
 EOF
     }
 
-    # Provision k8s_etcd server certificate
+    # Provision k8s_master certificate
     provisioner "file" {
         source = "./secrets/ca.pem"
         destination = "/home/core/ca.pem"
@@ -315,8 +316,6 @@ resource "digitalocean_droplet" "k8s_worker" {
     user_data = "${data.template_file.worker_yaml.rendered}"
     ssh_keys = ["${split(",", var.ssh_fingerprint)}"]
 
-
-
     # Generate k8s_worker client certificate
     provisioner "local-exec" {
         command = <<EOF
@@ -425,7 +424,7 @@ resource "null_resource" "deploy_dns_addon" {
     provisioner "local-exec" {
         command = <<EOF
             until kubectl get pods 2>/dev/null; do printf '.'; sleep 5; done
-            kubectl create -f ${path.module}/03-dns-addon.yaml
+            kubectl apply -f ${path.module}/03-dns-addon.yaml
 EOF
     }
 }
@@ -436,8 +435,7 @@ resource "null_resource" "deploy_microbot" {
         command = <<EOF
             sed -e "s/\$EXT_IP1/${digitalocean_droplet.k8s_worker.0.ipv4_address}/" < ${path.module}/04-microbot.yaml > ./secrets/04-microbot.rendered.yaml
             until kubectl get pods 2>/dev/null; do printf '.'; sleep 5; done
-            kubectl create -f ./secrets/04-microbot.rendered.yaml
-
+            kubectl apply -f ./secrets/04-microbot.rendered.yaml
 EOF
     }
 }
