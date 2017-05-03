@@ -10,5 +10,8 @@ secrets/
 # Terraform assets
 *.tfstate
 *.tfstate.backup
+
 /terraform_vars.sh
+# Allow additional Terraform configuration, f.ex. to create tags
 /custom.tf
+

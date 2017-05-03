@@ -315,7 +315,7 @@ resource "digitalocean_droplet" "k8s_worker" {
     private_networking = true
     user_data = "${data.template_file.worker_yaml.rendered}"
     ssh_keys = ["${split(",", var.ssh_fingerprint)}"]
-
+    tags = ["${var.tags}"]
     # Generate k8s_worker client certificate
     provisioner "local-exec" {
         command = <<EOF
