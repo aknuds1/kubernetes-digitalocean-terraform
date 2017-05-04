@@ -1,5 +1,3 @@
-#cloud-config
-
 write_files:
   - path: "/etc/flannel/options.env"
     permissions: "0755"

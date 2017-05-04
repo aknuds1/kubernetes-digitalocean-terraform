@@ -10,4 +10,7 @@ secrets/
 # Terraform assets
 *.tfstate
 *.tfstate.backup
+*.tfstate.lock.info
 
+# Ignition files generated from Container Linux configs
+*.ign

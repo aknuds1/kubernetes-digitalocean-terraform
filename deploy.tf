@@ -62,12 +62,19 @@ provider "digitalocean" {
 
 
 resource "digitalocean_droplet" "k8s_etcd" {
+    # Generate Ignition config
+    provisioner "local-exec" {
+        command = <<EOF
+            ct -in-file ${path.module}/00-etcd.yaml -platform digitalocean -out-file ${path.module}/00-etcd.ign
+EOF
+    }
+    
     image = "coreos-stable"
     name = "${var.prefix}k8s-etcd"
     region = "${var.do_region}"
     private_networking = true
     size = "${var.size_etcd}"
-    user_data = "${file("${path.module}/00-etcd.yaml")}"
+    user_data = "${file("${path.module}/00-etcd.ign")}"
     ssh_keys = ["${split(",", var.ssh_fingerprint)}"]
 
     # Generate the Certificate Authority
@@ -149,7 +156,14 @@ EOF
 
 
 data "template_file" "master_yaml" {
-    template = "${file("${path.module}/01-master.yaml")}"
+#     # Generate Ignition config
+#     provisioner "local-exec" {
+#         command = <<EOF
+#             ct -in-file ${path.module}/01-master.yaml -platform digitalocean -out-file ${path.module}/01-master.ign
+# EOF
+#     }
+    
+    template = "${file("${path.module}/01-master.ign")}"
     vars {
         DNS_SERVICE_IP = "10.3.0.10"
         ETCD_IP = "${digitalocean_droplet.k8s_etcd.ipv4_address_private}"
@@ -282,7 +296,14 @@ EOF
 
 
 data "template_file" "worker_yaml" {
-    template = "${file("${path.module}/02-worker.yaml")}"
+#     # Generate Ignition config
+#     provisioner "local-exec" {
+#         command = <<EOF
+#             ct -in-file ${path.module}/02-worker.yaml -platform digitalocean -out-file ${path.module}/02-worker.ign
+# EOF
+#     }
+    
+    template = "${file("${path.module}/02-worker.ign")}"
     vars {
         DNS_SERVICE_IP = "10.3.0.10"
         ETCD_IP = "${digitalocean_droplet.k8s_etcd.ipv4_address_private}"

@@ -8,6 +8,7 @@ Deploy your Kubernetes cluster in Digital Ocean using Terraform.
 * Digital Ocean Token [In DO's settings/tokens/new](https://cloud.digitalocean.com/settings/tokens/new)
 * [Terraform](https://www.terraform.io/)
 * CloudFlare's PKI/TLS toolkit [cfssl](https://github.com/cloudflare/cfssl)
+* [Container Linux Config Transpiler](https://github.com/coreos/container-linux-config-transpiler/releases)
 
 #### On Mac
 
